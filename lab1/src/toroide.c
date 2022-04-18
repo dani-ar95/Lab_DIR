@@ -112,7 +112,7 @@ void encontrar_min(float *numero, int norte, int sur, int este, int oeste)
 {
     float min;
     MPI_Status status;
-    for (int i = 0; i < L; i++)
+    for (int i = 0; i < L - 1; i++)
     {
         MPI_Send(&(*numero), 1, MPI_FLOAT, este, 0, MPI_COMM_WORLD);
         MPI_Recv(&min, 1, MPI_FLOAT, oeste, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -121,7 +121,7 @@ void encontrar_min(float *numero, int norte, int sur, int este, int oeste)
             (*numero) = min;
         }
     }
-    for (int i = 0; i < L; i++)
+    for (int i = 0; i < L - 1; i++)
     {
         MPI_Send(&(*numero), 1, MPI_FLOAT, norte, 0, MPI_COMM_WORLD);
         MPI_Recv(&min, 1, MPI_FLOAT, sur, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
