@@ -12,6 +12,7 @@
 #define RUTA_IMG "foto.dat"
 #define IMG_SIZE 400*400
 #define IMG_SIDE 400
+#define FILTER 0
 
 /*Variables Globales */
 
@@ -71,12 +72,27 @@ void receive_pixels(MPI_Comm commPadre){
     }
 }
 
-void build_info_pixel(int i, int j, int *rgb, int *info_pixel){
-  info_pixel[0] = i;
-  info_pixel[1] = j;
-  info_pixel[2] = rgb[0];
-  info_pixel[3] = rgb[1];
-  info_pixel[4] = rgb[2];
+void build_info_pixel(int i, int j, unsigned char rgb[], int info_pixel[]){
+  info_pixel[0] = j;
+  info_pixel[1] = i;
+  
+  switch(FILTER){
+    case 0:
+      info_pixel[2] = rgb[0];
+      info_pixel[3] = rgb[1];
+      info_pixel[4] = rgb[2];
+      break;
+    case 1:
+      info_pixel[2] = 255 - rgb[0];
+      info_pixel[3] = 255 - rgb[1];
+      info_pixel[4] = 255 - rgb[2];
+      break;
+    case 2:
+      info_pixel[2] = rgb[0];
+      info_pixel[3] = 255;
+      info_pixel[4] = 255;
+      break;
+  }
 }
 
 void read_file(int start, int length, MPI_File handler, MPI_Comm commPadre){
@@ -89,12 +105,12 @@ void read_file(int start, int length, MPI_File handler, MPI_Comm commPadre){
         //leer y enviar
         MPI_File_read(handler, rgb, 3, MPI_UNSIGNED_CHAR, &status);
 
-        //build_info_pixel(i, j, rgb, &info_pixel);
-        info_pixel[0] = j;
-        info_pixel[1] = i;
-        info_pixel[2] = rgb[0];
-        info_pixel[3] = rgb[1];
-        info_pixel[4] = rgb[2];
+        build_info_pixel(i, j, rgb, info_pixel);
+        // info_pixel[0] = j;
+        // info_pixel[1] = i;
+        // info_pixel[2] = 255 - rgb[0];
+        // info_pixel[3] = 255 - rgb[1];
+        // info_pixel[4] = 255 - rgb[2];
 
         MPI_Send(&info_pixel, 5, MPI_INT, 0, 1, commPadre);
       }
