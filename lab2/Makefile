@@ -19,7 +19,7 @@ $(DIROBJ)%.o: $(DIRSRC)%.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 test:
-	mpirun -n 1 --oversubscribe ./$(DIREXE)pract2
+	mpirun -n 1 --oversubscribe ./$(DIREXE)pract2 -DFILTER=1
 
 link_pract2: pract2
 	ln -s $(DIREXE)pract2 ./pract2

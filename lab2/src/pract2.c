@@ -138,6 +138,8 @@ int main (int argc, char *argv[]) {
   MPI_Comm_get_parent( &commPadre );
   if ( (commPadre==MPI_COMM_NULL) && (rank==0) )  {
 
+  printf("%d", FILTER);
+
 	initX();
 
 	/* Codigo del maestro */
