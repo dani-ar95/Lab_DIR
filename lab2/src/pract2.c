@@ -8,7 +8,7 @@
 #include <unistd.h>
 #define NIL (0)
 
-#define NUM_TRABAJADORES 8
+#define NUM_TRABAJADORES 10
 #define RUTA_IMG "foto.dat"
 #define DIMENSION_IMAGEN 400 * 400
 #define LADO_IMAGEN 400
@@ -62,14 +62,14 @@ void dibujaPunto(int x, int y, int r, int g, int b)
   XFlush(dpy);
 }
 
-void recibirPixeles(MPI_Comm commPadre)
+void recibirPixeles(MPI_Comm commHijo)
 {
   int info_pixel[5];
   MPI_Status status;
 
   for (int i = 0; i < DIMENSION_IMAGEN; i++)
   {
-    MPI_Recv(&info_pixel, 5, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, commPadre, &status);
+    MPI_Recv(&info_pixel, 5, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, commHijo, &status);
     dibujaPunto(info_pixel[0], info_pixel[1], info_pixel[2], info_pixel[3], info_pixel[4]);
   }
 }
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 {
 
   int rank, size;
-  MPI_Comm commPadre;
+  MPI_Comm commPadre, commHijo;
 
   int errcodes[NUM_TRABAJADORES];
 
@@ -146,12 +146,12 @@ int main(int argc, char *argv[])
     initX();
 
     /* Codigo del maestro */
-    MPI_Comm_spawn("pract2", MPI_ARGV_NULL, NUM_TRABAJADORES, MPI_INFO_NULL, 0, MPI_COMM_WORLD, &commPadre, errcodes);
+    MPI_Comm_spawn("pract2", MPI_ARGV_NULL, NUM_TRABAJADORES, MPI_INFO_NULL, 0, MPI_COMM_WORLD, &commHijo, errcodes);
 
     /*En algun momento dibujamos puntos en la ventana algo como
   dibujaPunto(x,y,r,g,b);  */
 
-    recibirPixeles(commPadre);
+    recibirPixeles(commHijo);
 
     sleep(10);
   }
